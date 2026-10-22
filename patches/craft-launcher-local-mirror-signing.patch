@@ -1,0 +1,30 @@
+diff --git a/crates/native/src/backend.rs b/crates/native/src/backend.rs
+index 1e68ce5..866067f 100644
+--- a/crates/native/src/backend.rs
++++ b/crates/native/src/backend.rs
+@@ -854,7 +854,7 @@ fn is_loopback(url: &str) -> bool {
+ /// there (never GitHub or ArtCraft's API), and its download links are trusted. Loopback only, so
+ /// nothing but the developer's own builds can be installed this way, and only in builds with the
+ /// `local-mirror` feature: release builds ignore the variable.
+-fn local_mirror() -> Option<String> {
++pub fn local_mirror() -> Option<String> {
+     if !cfg!(feature = "local-mirror") {
+         return None;
+     }
+diff --git a/crates/native/src/install.rs b/crates/native/src/install.rs
+index 1e974ea..1a8f96d 100644
+--- a/crates/native/src/install.rs
++++ b/crates/native/src/install.rs
+@@ -1146,7 +1146,11 @@ pub mod macos {
+ 
+     impl<'a> Expect<'a> {
+         pub fn release(release: &'a Release) -> Self {
+-            Self { team: Some(TEAM_ID), version: release.version.as_ref() }
++            // Builds served by a local mirror (`cargo xtask local serve`, loopback only, and only in
++            // launchers built with the `local-mirror` feature) are the developer's own ad-hoc-signed
++            // builds, so they can't carry the team's Developer ID: skip that one check for them.
++            let team = if crate::backend::local_mirror().is_some() { None } else { Some(TEAM_ID) };
++            Self { team, version: release.version.as_ref() }
+         }
+     }
+ 
