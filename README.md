@@ -31,6 +31,9 @@ The first build takes a while (often 1-3 hours) and 30-60 GB of disk.
 | `./run.sh update` | pull updates and any new Craft app, rebuild what changed, open the dashboard |
 | `./run.sh open` | open the dashboard |
 | `./run.sh status` | checked-out vs built versions |
+| `./run.sh check` | fetch from GitHub and list which apps have newer code than their build; offers to rebuild |
+| `./run.sh rebuild [apps]` | rebuild the outdated apps (or just the ones named) as a new dev version, so the launcher shows **Update** |
+| `./run.sh watch on` / `off` | check once a day in the background (10:00, `CHECK_HOUR=…` to change) and pop up an alert when an app has updates |
 | `./run.sh install-apps` | reinstall the two Mac apps |
 | `./run.sh publish` | push this project to your GitHub (creates a private repo) |
 
