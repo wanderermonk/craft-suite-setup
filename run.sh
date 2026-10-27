@@ -344,7 +344,14 @@ CLAUDE_CONFIG="$HOME/Library/Application Support/Claude/claude_desktop_config.js
 
 # Prints the MCP args an app's CLI accepts (they differ a little between apps), one per line.
 mcp_args() { # $1 = cli path
-  local help; help=$(perl -e 'alarm 8; exec @ARGV' "$1" mcp --help </dev/null 2>&1)
+  local full help
+  full=$(perl -e 'alarm 8; exec @ARGV' "$1" mcp --help </dev/null 2>&1)
+  # Some CLIs print their whole usage here; keep only the `mcp` part so flags of other
+  # subcommands (e.g. `info --compact`) aren't passed to the MCP server.
+  help=$(awk '/-cli mcp( |$)/ {on=1; print; next}
+              on && /-cli / && ($0 ~ /^[^ ]/ || $0 ~ /^ [^ ]/ || $0 ~ /^  [^ ]/ || $0 ~ /^   [^ ]/) {on=0}
+              on' <<<"$full")
+  [ -n "$help" ] || help=$full
   echo mcp
   if grep -q -- '--headless' <<<"$help"; then echo --headless; fi
   if grep -q -- '--autosave' <<<"$help"; then echo --autosave; fi
