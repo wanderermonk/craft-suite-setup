@@ -1,2 +1,4 @@
 .DS_Store
 *.log
+# macOS metadata on external drives
+._*
